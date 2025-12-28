@@ -1,0 +1,66 @@
+# config/experiments.yaml
+
+data:
+  path: "data/raw/iris.data"
+  feature_columns:
+    - sepal_length
+    - sepal_width
+    - petal_length
+    - petal_width
+  target_column: species_encoded
+
+preprocessing:
+  scale_features: true # Fixed
+  scaler_type: [standard, minmax] # Sweep
+
+  # Sweep
+  split_strategy:
+    - train_ratio: 0.8
+      val_ratio: 0.1
+      test_ratio: 0.1
+
+    - train_ratio: 0.7
+      val_ratio: 0.2
+      test_ratio: 0.1
+
+    - train_ratio: 0.75
+      val_ratio: 0.15
+      test_ratio: 0.1
+
+  stratify: true
+  random_state: 42
+
+model:
+  architecture:
+    hidden_layers: [[32, 16], [64, 32], [64, 32, 16], [128, 64]] # Sweep
+    output_size: 3 # Fixed
+  
+  activations:
+    hidden: [relu, tanh] # Sweep
+    output: softmax # Fixed
+
+training:
+  optimizer:
+    type: sgd_momentum  # Fixed
+    learning_rate: [0.001, 0.01, 0.05] # Sweep
+    momentum: [0.9, 0.95] # Sweep
+  
+  loss_function: cross_entropy # Fixed
+  
+  epochs: [30, 50, 100] # Sweep
+  batch_size: [8, 16, 32] # Sweep
+  patience: 30
+  random_state: 42 # Fixed
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1_score
+    - confusion_matrix
+  
+  class_names:
+    - Setosa
+    - Versicolor
+    - Virginica
